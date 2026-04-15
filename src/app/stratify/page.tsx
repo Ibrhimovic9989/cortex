@@ -124,7 +124,7 @@ export default function StratifyPage() {
             onReset={resetToDemo}
             hasData={isReal}
             subjectCount={isReal ? subjects.length : undefined}
-            helpText="Upload .npz with 'X' of shape (N, 4950). Cortex embeds each subject into 256-dim latent space, which we PCA-project to 2D here. Label colors use the classifier's P(ASD) ≷ 0.5."
+            helpText="CSV, Excel, or .npz with per-subject connectivity rows (4,950 cols). Cortex embeds each into 256-dim latent space, PCA-projects to 2D. Color defaults to the classifier's P(ASD) ≷ 0.5."
           />
 
           <div className="grid lg:grid-cols-3 gap-6">

@@ -98,7 +98,7 @@ export default function FlagPage() {
             onReset={resetToDemo}
             hasData={isReal}
             subjectCount={isReal ? scans.length : undefined}
-            helpText="Upload .npz with 'X' of shape (N, 4950). Cortex reconstructs each subject's connectivity from its latent and scores mean squared error. z-scores are computed relative to your uploaded cohort."
+            helpText="CSV, Excel, or .npz with per-subject connectivity rows (4,950 cols). Cortex reconstructs each subject's connectivity from its latent; reconstruction MSE is the atypicality signal. z-scores are relative to your uploaded cohort."
           />
 
           <div className="grid md:grid-cols-3 gap-4 mb-6">

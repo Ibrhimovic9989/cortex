@@ -140,7 +140,7 @@ export default function BiomarkersPage() {
             onReset={resetToDemo}
             hasData={isReal}
             subjectCount={subjectCount}
-            helpText="Upload .npz with 'X' of shape (N, 4950). Cortex computes the gradient of its ASD-logit w.r.t. each of the 4,950 connectivity features, averaged across your cohort. Top-25 edges returned. ROI pair names use Schaefer 100-parcel 7-network labels."
+            helpText="CSV, Excel, or .npz with per-subject connectivity rows (4,950 cols). Cortex computes the gradient of its ASD-logit w.r.t. each connectivity feature, averaged across your cohort. Top-25 edges returned, mapped to Schaefer 7-network labels."
           />
 
           <div className="card p-6 mb-6">

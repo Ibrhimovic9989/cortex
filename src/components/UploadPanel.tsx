@@ -8,9 +8,12 @@ type Props = {
   helpText?: string;
   hasData: boolean;
   subjectCount?: number;
+  sampleUrl?: string;
 };
 
-export function UploadPanel({ onUpload, onReset, helpText, hasData, subjectCount }: Props) {
+const DEFAULT_SAMPLE_URL = "https://huggingface.co/Ibrahim9989/neurobrain-nd-transform/resolve/main/cortex_external_test.csv";
+
+export function UploadPanel({ onUpload, onReset, helpText, hasData, subjectCount, sampleUrl = DEFAULT_SAMPLE_URL }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -37,14 +40,27 @@ export function UploadPanel({ onUpload, onReset, helpText, hasData, subjectCount
         <div className="flex-1 min-w-0">
           <h3 className="text-sm text-[var(--heading)] mb-1">Upload connectivity data</h3>
           <p className="text-xs text-[var(--muted)] leading-relaxed">
-            {helpText || "Upload an .npz file with an 'X' key of shape (N, 4950) — Fisher-z connectivity features from a 100-ROI Schaefer atlas."}
+            {helpText || "CSV, Excel, or .npz. Each row = one subject, 4,950 columns = connectivity features (upper-triangle of a 100-ROI Schaefer correlation matrix)."}
           </p>
+          {sampleUrl && (
+            <a
+              href={sampleUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 mt-2 text-xs text-[var(--accent)] hover:underline"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+              </svg>
+              Download sample CSV (30 subjects, 1.4 MB)
+            </a>
+          )}
         </div>
         <div className="flex gap-2">
           <input
             ref={inputRef}
             type="file"
-            accept=".npz"
+            accept=".npz,.csv,.xlsx,.xls"
             className="hidden"
             onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
           />
@@ -53,7 +69,7 @@ export function UploadPanel({ onUpload, onReset, helpText, hasData, subjectCount
             disabled={busy}
             className="cta-primary disabled:opacity-50"
           >
-            {busy ? "Running..." : hasData ? "Upload new file" : "Upload .npz"}
+            {busy ? "Running..." : hasData ? "Upload new file" : "Upload file"}
           </button>
           {hasData && (
             <button
