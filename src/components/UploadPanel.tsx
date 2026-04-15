@@ -11,7 +11,7 @@ type Props = {
   sampleUrl?: string;
 };
 
-const DEFAULT_SAMPLE_URL = "https://huggingface.co/Ibrahim9989/neurobrain-nd-transform/resolve/main/cortex_external_test.csv";
+const DEFAULT_SAMPLE_URL = "/api/sample/csv";
 
 export function UploadPanel({ onUpload, onReset, helpText, hasData, subjectCount, sampleUrl = DEFAULT_SAMPLE_URL }: Props) {
   const [busy, setBusy] = useState(false);
@@ -52,8 +52,7 @@ export function UploadPanel({ onUpload, onReset, helpText, hasData, subjectCount
             <div className="mt-3 flex flex-wrap gap-3 items-center">
               <a
                 href={sampleUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                download
                 className="inline-flex items-center gap-1.5 text-xs text-[var(--accent)] hover:underline"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -62,9 +61,8 @@ export function UploadPanel({ onUpload, onReset, helpText, hasData, subjectCount
                 Sample CSV — 30 subjects (1.4 MB)
               </a>
               <a
-                href="https://github.com/netneurolab/hansen_many_networks/raw/master/data/Schaefer100/haemodynamic_connectivity.npy"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/api/sample/hansen"
+                download
                 className="inline-flex items-center gap-1.5 text-xs text-[var(--muted)] hover:text-[var(--accent)] hover:underline"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
