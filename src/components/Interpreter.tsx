@@ -59,18 +59,68 @@ type StratifyData = {
 };
 
 export function StratifyInterpretation(d: StratifyData) {
+  // ─── Too few subjects — the whole point of stratification is cross-subject comparison ───
+  if (d.totalSubjects < 2) {
+    const label = d.asdCount > 0 ? "autism-like" : "typical-like";
+    const pct = d.asdCount > 0 ? "≥50%" : "<50%";
+    return (
+      <Shell>
+        <Block heading="You uploaded a single subject">
+          <p>
+            The Stratifier is designed to compare <strong>many subjects</strong> to each other — you uploaded{" "}
+            <strong>1</strong>. Clustering and 2D maps only make sense when you have multiple brains to compare.
+          </p>
+          <p>
+            Cortex did still run on your one brain: its classifier says P(ASD) {pct} — labeling it{" "}
+            <Pill tone="accent">{label}</Pill>. For a single subject, the <strong>Biomarker Explorer</strong> is more
+            useful: it tells you which ROI-pairs Cortex paid attention to when making that call.
+          </p>
+        </Block>
+        <Block heading="What to do next">
+          <p>
+            Use the <strong>&quot;Download sample CSV&quot;</strong> link in the upload panel above — that&apos;s a 30-subject
+            file from an independent public dataset. Or upload your own cohort (≥10 subjects recommended). Each row
+            should be one subject.
+          </p>
+        </Block>
+      </Shell>
+    );
+  }
+
+  if (d.totalSubjects < 10) {
+    return (
+      <Shell>
+        <Block heading="Small cohort — results are unreliable">
+          <p>
+            You uploaded <strong>{d.totalSubjects}</strong> subjects. Cortex ran on all of them, but{" "}
+            <strong>cluster structure isn&apos;t meaningful below ~10 subjects</strong>. With a handful of points, any
+            clustering reflects noise more than real neural patterns.
+          </p>
+          <p>
+            Classifier summary: <Pill tone="accent">{d.asdCount} autism-like</Pill>{" "}
+            <Pill>{d.tdCount} typical-like</Pill>. Treat this as a preview, not a result.
+          </p>
+        </Block>
+        <Block heading="What to do next">
+          <p>
+            Upload a larger cohort. The <strong>Flagger</strong> tool works for small-n (even single subjects) since
+            it just scores each scan individually. The <strong>Biomarker Explorer</strong> also works with few
+            subjects — it averages gradients across whatever you upload.
+          </p>
+        </Block>
+      </Shell>
+    );
+  }
+
+  // ─── Normal cohort (≥10) ───
   const asdPct = (d.asdCount / d.totalSubjects) * 100;
-  const purestCluster = d.clusters.reduce(
-    (best, c, i) => (Math.abs(c.asdPct - 50) > Math.abs(best.asdPct - 50) ? { ...c, idx: i } : best),
-    { ...d.clusters[0], idx: 0, asdPct: 50 }
-  );
-  const separable = d.clusters.some((c) => c.asdPct > 75 || c.asdPct < 25);
+  const separable = d.clusters.some((c) => c.n >= 3 && (c.asdPct > 75 || c.asdPct < 25));
 
   return (
     <Shell>
       <Block heading="In plain English">
         <p>
-          You uploaded <strong>{d.totalSubjects}</strong> brains. Cortex looked at each one's connectivity pattern —
+          You uploaded <strong>{d.totalSubjects}</strong> brains. Cortex looked at each one&apos;s connectivity pattern —
           how strongly different brain regions talk to each other — and assigned every brain a position in a map where
           brains with similar patterns sit close together.
         </p>
@@ -87,7 +137,8 @@ export function StratifyInterpretation(d: StratifyData) {
               <strong>Cluster {i}</strong> has <strong>{c.n}</strong> subjects
               {c.n > 0 && <> — <strong>{c.asdPct.toFixed(0)}%</strong> are autism-classified</>}.{" "}
               {c.n === 0 ? "(empty)" :
-                c.asdPct > 75 ? "This is a highly autism-enriched subgroup — likely represents a consistent neural subtype."
+                c.n < 3 ? "Too few members to interpret — merge or try smaller k."
+                : c.asdPct > 75 ? "Highly autism-enriched subgroup — likely represents a consistent neural subtype."
                 : c.asdPct > 55 ? "Moderately autism-leaning — mixed group worth examining further."
                 : c.asdPct < 25 ? "Predominantly typical — probably a control-like subgroup."
                 : "Mixed — contains both autism and typical brains, suggesting this cluster captures something other than autism (age, sex, site)."}
@@ -138,6 +189,57 @@ export function FlagInterpretation(d: FlagData) {
   const outlierPct = (d.outlier / d.total) * 100;
   const borderlinePct = (d.borderline / d.total) * 100;
   const flaggedPct = outlierPct + borderlinePct;
+
+  // Single subject — outlier detection needs a cohort reference
+  if (d.total < 2) {
+    return (
+      <Shell>
+        <Block heading="You uploaded a single subject">
+          <p>
+            The Flagger needs a <strong>cohort</strong> to work — it flags scans that look unusual{" "}
+            <em>relative to other scans in your upload</em>. With one subject, there&apos;s nothing to compare against,
+            so the z-score is trivially 0 and the flag is always &quot;clean&quot;.
+          </p>
+          <p>
+            Cortex did compute a reconstruction MSE for your one brain, which tells you how well it matches the
+            training distribution (1,545 ABIDE subjects). High MSE means &quot;unusual for Cortex&quot;; low MSE means
+            &quot;looks like something I&apos;ve seen before&quot;. But without a cohort, you can&apos;t rank or flag.
+          </p>
+        </Block>
+        <Block heading="What to do next">
+          <p>
+            Use the <strong>&quot;Download sample CSV&quot;</strong> link (30-subject file) to see how the Flagger
+            actually works, or upload your own cohort (≥10 subjects recommended).
+          </p>
+        </Block>
+      </Shell>
+    );
+  }
+
+  if (d.total < 5) {
+    return (
+      <Shell>
+        <Block heading="Small cohort — flag statistics are unstable">
+          <p>
+            You uploaded <strong>{d.total}</strong> scans. Flag categories (clean/borderline/outlier) are based on
+            z-scores relative to your uploaded cohort — with &lt;5 subjects, the mean and standard deviation are
+            unreliable, so flags can swing wildly with one more subject added or removed.
+          </p>
+          <p>
+            Counts: <Pill tone="accent">{d.clean} clean</Pill>{" "}
+            <Pill tone="warn">{d.borderline} borderline</Pill>{" "}
+            <Pill tone="bad">{d.outlier} outlier</Pill>. Treat as directional only.
+          </p>
+        </Block>
+        <Block heading="What to do next">
+          <p>
+            Add more scans — the Flagger becomes reliable above ~20 subjects. For single-subject assessment,{" "}
+            just inspect the raw reconstruction MSE value instead of the flag category.
+          </p>
+        </Block>
+      </Shell>
+    );
+  }
 
   return (
     <Shell>

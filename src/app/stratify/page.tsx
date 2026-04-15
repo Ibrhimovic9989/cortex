@@ -128,6 +128,26 @@ export default function StratifyPage() {
             helpText="CSV, Excel, or .npz with per-subject connectivity rows (4,950 cols). Cortex embeds each into 256-dim latent space, PCA-projects to 2D. Color defaults to the classifier's P(ASD) ≷ 0.5."
           />
 
+          {isReal && subjects.length < 10 && (
+            <div className="card p-4 mb-6 border-l-4" style={{ borderLeftColor: "var(--accent2)" }}>
+              <div className="flex items-start gap-3">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" strokeWidth="2" className="flex-shrink-0 mt-0.5">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <div className="text-sm">
+                  <strong className="text-[var(--heading)]">Need more subjects for meaningful stratification.</strong>{" "}
+                  <span className="text-[var(--muted)]">
+                    You uploaded {subjects.length}{" "}
+                    {subjects.length === 1 ? "subject" : "subjects"}. Stratification requires at least 10 subjects to reveal meaningful patterns —
+                    with fewer, clusters just reflect noise. See the interpretation below for what to do next.
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="grid lg:grid-cols-3 gap-6">
             <div className="card p-6 lg:col-span-2">
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
