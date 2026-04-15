@@ -2,6 +2,7 @@
 
 import { Nav, Footer, Section, Container } from "@/components/Shell";
 import { UploadPanel } from "@/components/UploadPanel";
+import { FlagInterpretation } from "@/components/Interpreter";
 import { useState, useMemo } from "react";
 import { qc, type QCRow } from "@/lib/api";
 
@@ -221,6 +222,14 @@ export default function FlagPage() {
               )}
             </div>
           </div>
+
+          <FlagInterpretation
+            total={scans.length}
+            clean={counts.clean}
+            borderline={counts.borderline}
+            outlier={counts.outlier}
+            isReal={isReal}
+          />
 
           <div className="card p-6 mt-6">
             <h3 className="text-sm text-[var(--heading)] mb-3">How the QC signal works</h3>

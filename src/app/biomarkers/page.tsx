@@ -2,6 +2,7 @@
 
 import { Nav, Footer, Section, Container } from "@/components/Shell";
 import { UploadPanel } from "@/components/UploadPanel";
+import { BiomarkerInterpretation } from "@/components/Interpreter";
 import { useState, useMemo } from "react";
 import { biomarkers, type Biomarker } from "@/lib/api";
 
@@ -264,6 +265,19 @@ export default function BiomarkersPage() {
               )}
             </div>
           </div>
+
+          <BiomarkerInterpretation
+            total={pairs.length}
+            upCount={pairs.filter((p) => p.direction === "ASD↑").length}
+            downCount={pairs.filter((p) => p.direction === "ASD↓").length}
+            topNetwork={networkSummary.slice().sort((a, b) => b.weight - a.weight)[0]?.network ?? "DMN"}
+            topEdge={pairs[0] ? {
+              roi1Name: pairs[0].roi1Name, roi2Name: pairs[0].roi2Name,
+              network1: pairs[0].network1, network2: pairs[0].network2,
+              direction: pairs[0].direction, importance: pairs[0].importance,
+            } : null}
+            isReal={isReal}
+          />
 
           <div className="card p-6 mt-6">
             <h3 className="text-sm text-[var(--heading)] mb-3">Interpretation notes</h3>

@@ -2,6 +2,7 @@
 
 import { Nav, Footer, Section, Container } from "@/components/Shell";
 import { UploadPanel } from "@/components/UploadPanel";
+import { StratifyInterpretation } from "@/components/Interpreter";
 import { useState, useMemo } from "react";
 import { embed, project2D, type EmbeddingRow } from "@/lib/api";
 
@@ -238,6 +239,15 @@ export default function StratifyPage() {
               </p>
             </div>
           )}
+
+          <StratifyInterpretation
+            totalSubjects={subjects.length}
+            asdCount={subjects.filter((s) => s.label === "ASD").length}
+            tdCount={subjects.filter((s) => s.label === "TD").length}
+            k={k}
+            mode={mode === "label" ? "label" : "clusters"}
+            clusters={summary}
+          />
 
           <div className="card p-6 mt-6">
             <h3 className="text-sm text-[var(--heading)] mb-3">How to prepare your data</h3>
