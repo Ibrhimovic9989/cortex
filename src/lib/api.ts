@@ -2,7 +2,7 @@
  * Cortex API client. Wraps calls to /api/cortex/* on the neuro-app backend.
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_CORTEX_API ?? "https://neuro.mind.new";
+const API_BASE = process.env.NEXT_PUBLIC_CORTEX_API ?? "https://neurobrain-api.eastus.cloudapp.azure.com";
 
 export type SubjectMeta = {
   version: string;
