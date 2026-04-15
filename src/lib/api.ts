@@ -2,7 +2,11 @@
  * Cortex API client. Wraps calls to /api/cortex/* on the neuro-app backend.
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_CORTEX_API ?? "https://neurobrain-api.eastus.cloudapp.azure.com";
+// Same-origin: calls go to the Cortex Next.js app's own /api/cortex/* route,
+// which proxies server-side to the actual backend. This avoids CORS and
+// removes browser-side env-var dependency.
+// To override for local dev, set NEXT_PUBLIC_CORTEX_API=http://localhost:8000 etc.
+const API_BASE = process.env.NEXT_PUBLIC_CORTEX_API ?? "";
 
 export type SubjectMeta = {
   version: string;
