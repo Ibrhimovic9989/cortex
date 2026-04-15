@@ -40,27 +40,46 @@ export function UploadPanel({ onUpload, onReset, helpText, hasData, subjectCount
         <div className="flex-1 min-w-0">
           <h3 className="text-sm text-[var(--heading)] mb-1">Upload connectivity data</h3>
           <p className="text-xs text-[var(--muted)] leading-relaxed">
-            {helpText || "CSV, Excel, or .npz. Each row = one subject, 4,950 columns = connectivity features (upper-triangle of a 100-ROI Schaefer correlation matrix)."}
+            {helpText || "Cortex parses CSV / TSV / TXT / Excel / .npz / .npy. Any 100-ROI atlas (Schaefer-100 recommended). Auto-detects headers, subject-ID columns, and delimiters."}
           </p>
+          <div className="mt-2 text-xs text-[var(--muted)] space-y-1">
+            <div><span className="text-[var(--text)]">Accepted shapes (any of):</span></div>
+            <div>• <code className="text-[10px]">(N, 4950)</code> — N subjects, pre-extracted features</div>
+            <div>• <code className="text-[10px]">(100, 100)</code> — single subject connectivity matrix</div>
+            <div>• <code className="text-[10px]">(T, 100)</code> — single subject ROI time series (T ≥ 30) — we compute connectivity for you</div>
+          </div>
           {sampleUrl && (
-            <a
-              href={sampleUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 mt-2 text-xs text-[var(--accent)] hover:underline"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-              </svg>
-              Download sample CSV (30 subjects, 1.4 MB)
-            </a>
+            <div className="mt-3 flex flex-wrap gap-3 items-center">
+              <a
+                href={sampleUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-[var(--accent)] hover:underline"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                </svg>
+                Sample CSV — 30 subjects (1.4 MB)
+              </a>
+              <a
+                href="https://github.com/netneurolab/hansen_many_networks/raw/master/data/Schaefer100/haemodynamic_connectivity.npy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-[var(--muted)] hover:text-[var(--accent)] hover:underline"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                Hansen 2023 (HCP-group) .npy — 100×100 matrix
+              </a>
+            </div>
           )}
         </div>
         <div className="flex gap-2">
           <input
             ref={inputRef}
             type="file"
-            accept=".npz,.csv,.xlsx,.xls"
+            accept=".npz,.npy,.csv,.tsv,.txt,.xlsx,.xls"
             className="hidden"
             onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
           />
